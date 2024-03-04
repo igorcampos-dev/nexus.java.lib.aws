@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.2.2</version>
+		<relativePath/>
+	</parent>
+
+	<groupId>com.nexus</groupId>
+	<artifactId>aws</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>aws</name>
+	<description>project with classes that will contain logic for processing using the AWS simulator, S3rver</description>
+
+	<properties>
+		<java.version>17</java.version>
+		<spring.boot.version>3.2.2</spring.boot.version>
+		<org.project.lombok>1.18.30</org.project.lombok>
+		<com.amazonaws.version>1.12.656</com.amazonaws.version>
+		<com.nexus.utils>0.0.1-SNAPSHOT</com.nexus.utils>
+
+		<!-- repositories url -->
+		<url.nexus.utils>https://raw.githubusercontent.com/igorcampos-dev/nexus.java.lib.utils/master/target/</url.nexus.utils>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<version>${spring.boot.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+			<version>${spring.boot.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${org.project.lombok}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.4.0-b180830.0359</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>${com.amazonaws.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<version>${spring.boot.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.jayway.jsonpath</groupId>
+					<artifactId>json-path</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>com.nexus</groupId>
+			<artifactId>utils</artifactId>
+			<version>${com.nexus.utils}</version>
+		</dependency>
+
+    </dependencies>
+
+	<repositories>
+
+		<repository>
+			<id>lib-utils</id>
+			<url>${url.nexus.utils}</url>
+		</repository>
+
+	</repositories>
+
+</project>
