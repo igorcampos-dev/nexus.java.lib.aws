@@ -1,21 +1,22 @@
-package com.nexus.aws.client;
+package com.nexus.aws.cloud.client;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.nexus.aws.properties.AwsProperties;
+import com.nexus.aws.cloud.properties.S3PropertiesImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AWSS3Client {
+@RequiredArgsConstructor
+public class S3ClientImpl implements S3Client {
 
     private AmazonS3 client;
-    private final AwsProperties awsProperties = new AwsProperties();
+    private final S3PropertiesImpl awsProperties;
 
-
-
+    @Override
     public AmazonS3 getClient() {
         if (client == null) {
             client = AmazonS3ClientBuilder.standard()
@@ -24,6 +25,11 @@ public class AWSS3Client {
                     .build();
         }
         return client;
+    }
+
+    @Override
+    public S3PropertiesImpl getAwsProperties() {
+        return awsProperties;
     }
 
     private BasicAWSCredentials getProperties(){
