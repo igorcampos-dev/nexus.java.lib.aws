@@ -9,6 +9,7 @@ import com.nexus.aws.cloud.client.S3Client;
 import com.nexus.aws.exception.FolderEmptyException;
 import com.nexus.aws.model.S3File;
 import com.nexus.utils.Objects;
+import jdk.jfr.Category;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ public class S3Impl implements S3 {
     private static final ObjectMetadata metadata = new ObjectMetadata();
     private static final InputStream inputStream = new ByteArrayInputStream(new byte[0]);
     private static final FolderEmptyException FOLDER_EMPTY_EXCEPTION = new FolderEmptyException("Lista vazia, você não possui contraCheques");
+
 
     @Override
     public void verifyBucketExistsOrElseCreate() {
@@ -97,6 +99,7 @@ public class S3Impl implements S3 {
                                 .substring(s3ObjectSummary.getKey().lastIndexOf("/") + 1))
                         .build()).collect(Collectors.toList());
     }
+
 
     private void putObjectV2(String folderName){
         metadata.setContentLength(0);

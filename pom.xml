@@ -23,8 +23,6 @@
 		<com.amazonaws.version>1.12.656</com.amazonaws.version>
 		<com.nexus.utils>0.0.1-SNAPSHOT</com.nexus.utils>
 
-		<!-- repositories url -->
-		<url.nexus.utils>https://raw.githubusercontent.com/igorcampos-dev/nexus.java.lib.utils/master/target/</url.nexus.utils>
 	</properties>
 
 	<dependencies>
@@ -74,20 +72,36 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.nexus</groupId>
-			<artifactId>utils</artifactId>
-			<version>${com.nexus.utils}</version>
+			<groupId>com.github.igorcampos-dev</groupId>
+			<artifactId>nexus.java.lib.utils</artifactId>
+			<version>master-af98a8f7ae-1</version>
 		</dependency>
 
     </dependencies>
 
 	<repositories>
-
 		<repository>
-			<id>lib-utils</id>
-			<url>${url.nexus.utils}</url>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
 		</repository>
-
 	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<compilerArgs>
+						<arg>--release</arg>
+						<arg>${java.version}</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
