@@ -10,5 +10,4 @@ import lombok.*;
 public class S3File {
     private String filename;
     private long size;
-
 }

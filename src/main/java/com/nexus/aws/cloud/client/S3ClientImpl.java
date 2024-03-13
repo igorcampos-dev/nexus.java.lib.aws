@@ -5,7 +5,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.nexus.aws.cloud.properties.S3PropertiesImpl;
+import com.nexus.aws.cloud.properties.S3Properties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class S3ClientImpl implements S3Client {
 
     private AmazonS3 client;
-    private final S3PropertiesImpl awsProperties;
+    private final S3Properties awsProperties;
 
     @Override
     public AmazonS3 getClient() {
@@ -28,16 +28,11 @@ public class S3ClientImpl implements S3Client {
     }
 
     @Override
-    public S3PropertiesImpl getAwsProperties() {
+    public S3Properties getAwsProperties() {
         return awsProperties;
     }
 
     private BasicAWSCredentials getProperties(){
-        awsProperties.setServiceEndpoint("http://localhost:4568");
-        awsProperties.setAccessKey("S3RVER");
-        awsProperties.setSecretKey("S3RVER");
-        awsProperties.setRegion("us-east-1");
-        awsProperties.setBucketName("funcionarios");
         return new BasicAWSCredentials(awsProperties.getAccessKey(), awsProperties.getSecretKey());
     }
 }

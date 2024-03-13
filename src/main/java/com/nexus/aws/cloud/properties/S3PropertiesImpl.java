@@ -1,6 +1,5 @@
 package com.nexus.aws.cloud.properties;
 
-
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
