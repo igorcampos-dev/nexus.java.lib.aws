@@ -9,7 +9,6 @@ import com.nexus.aws.cloud.client.S3Client;
 import com.nexus.aws.exception.FolderEmptyException;
 import com.nexus.aws.model.S3File;
 import com.nexus.utils.Objects;
-import jdk.jfr.Category;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -95,7 +94,7 @@ public class S3Impl implements S3 {
                 .filter(s3ObjectSummary -> !s3ObjectSummary.getKey().equals(folderPath + "/"))
                 .map(s3ObjectSummary -> S3File.builder()
                         .size(s3ObjectSummary.getSize())
-                        .filename(s3ObjectSummary.getKey()
+                        .filename(s3ObjectSummary.getKey().concat(".csv")
                                 .substring(s3ObjectSummary.getKey().lastIndexOf("/") + 1))
                         .build()).collect(Collectors.toList());
     }

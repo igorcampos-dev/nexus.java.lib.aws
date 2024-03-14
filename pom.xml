@@ -22,7 +22,7 @@
 		<org.project.lombok>1.18.30</org.project.lombok>
 		<com.amazonaws.version>1.12.656</com.amazonaws.version>
 		<com.nexus.utils>0.0.1-SNAPSHOT</com.nexus.utils>
-
+		<nexus.java.lib.utils>master-b79351104c-1</nexus.java.lib.utils>
 	</properties>
 
 	<dependencies>
@@ -74,7 +74,7 @@
 		<dependency>
 			<groupId>com.github.igorcampos-dev</groupId>
 			<artifactId>nexus.java.lib.utils</artifactId>
-			<version>master-af98a8f7ae-1</version>
+			<version>${nexus.java.lib.utils}</version>
 		</dependency>
 
     </dependencies>
