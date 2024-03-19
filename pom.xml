@@ -22,7 +22,7 @@
 		<org.project.lombok>1.18.30</org.project.lombok>
 		<com.amazonaws.version>1.12.656</com.amazonaws.version>
 		<com.nexus.utils>0.0.1-SNAPSHOT</com.nexus.utils>
-		<nexus.java.lib.utils>master-3c46cd317c-1</nexus.java.lib.utils>
+		<nexus.java.lib.utils>master-b9b8acf909-1</nexus.java.lib.utils>
 	</properties>
 
 	<dependencies>
