@@ -2,10 +2,12 @@ package com.nexus.aws.cloud;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.model.*;
+import com.amazonaws.util.IOUtils;
 import com.nexus.aws.cloud.client.S3Client;
 import com.nexus.aws.exception.FileAlreadyExistsException;
 import com.nexus.aws.exception.FileNotExists;
 import com.nexus.aws.exception.FolderEmptyException;
+import com.nexus.aws.model.FileEmpty;
 import com.nexus.aws.model.S3File;
 import com.nexus.utils.Objects;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +24,6 @@ public class S3Impl implements S3 {
 
     private final S3Client s3Client;
     private static final ObjectMetadata metadata = new ObjectMetadata();
-
-    private static final InputStream inputStream = new ByteArrayInputStream(new byte[0]);
-    private static final FolderEmptyException FOLDER_EMPTY_EXCEPTION = new FolderEmptyException("Lista vazia, você não possui contraCheques");
-    private static final FileNotExists FILE_NOT_EXISTS = new FileNotExists("O arquivo não existe");
-    private static final FileAlreadyExistsException FILE_ALREADY_EXISTS_EXCEPTION = new FileAlreadyExistsException("Arquivo já existe na base de dados");
 
     @Override
     public void verifyBucketExistsOrElseCreate() {
@@ -119,11 +116,33 @@ public class S3Impl implements S3 {
         s3Client.getClient().deleteObject(new DeleteObjectRequest(s3Client.getAwsProperties().getBucketName(), key));
     }
 
+    @Override
+    public void updateObject(InputStream file, String folder, String filename) {
+        this.deleteFile(folder, filename);
+        this.putObject(file, folder, filename);
+    }
+
+    @Override
+    public byte[] getFile(String folder, String fileName) {
+        String key = String.format("%s/%s", folder, fileName);
+        boolean exists = s3Client.getClient().doesObjectExist(s3Client.getAwsProperties().getBucketName(), key);
+        Objects.throwIfFalse(exists, FILE_NOT_EXISTS);
+
+        GetObjectRequest getObjectRequest = new GetObjectRequest(s3Client.getAwsProperties().getBucketName(), key);
+        S3Object object = s3Client.getClient().getObject(getObjectRequest);
+
+        try {
+            return IOUtils.toByteArray(object.getObjectContent());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     private void putObjectV2(String folderName){
         metadata.setContentLength(0);
         try {
-            s3Client.getClient().putObject(s3Client.getAwsProperties().getBucketName(), folderName, inputStream, metadata);
+            s3Client.getClient().putObject(s3Client.getAwsProperties().getBucketName(), folderName, FileEmpty.inputStream, metadata);
         } catch (Exception ignored){
 
         }
@@ -150,4 +169,9 @@ public class S3Impl implements S3 {
             Objects.throwIfTrue(isNotNull, FILE_ALREADY_EXISTS_EXCEPTION);
         } catch (AmazonS3Exception ignored){}
     }
+
+    private static final FolderEmptyException FOLDER_EMPTY_EXCEPTION = new FolderEmptyException("Lista vazia, você não possui contraCheques");
+    private static final FileNotExists FILE_NOT_EXISTS = new FileNotExists("O arquivo não existe");
+    private static final FileAlreadyExistsException FILE_ALREADY_EXISTS_EXCEPTION = new FileAlreadyExistsException("Arquivo já existe na base de dados");
+
 }

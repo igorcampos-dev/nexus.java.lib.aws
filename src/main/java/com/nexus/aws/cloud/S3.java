@@ -13,5 +13,7 @@ public interface S3 {
     List<S3File> listObjectsInFolder(String folderPath);
     List<S3File> formateList(ListObjectsV2Result result, String folderPath);
     void deleteFile(String folderName, String fileName);
+    void updateObject(InputStream file, String folder, String filename);
+    byte[] getFile(String folder, String filename);
 
 }
