@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import java.io.*;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,6 +99,9 @@ public class S3Impl implements S3 {
     }
     @Override
     public List<S3File> formateList(ListObjectsV2Result result, String folderPath) {
+
+        result.getObjectSummaries().removeIf(objectSummary -> folderPath.concat("/").equals(objectSummary.getKey()));
+
         Objects.requireNonEmpty(result.getObjectSummaries(), FOLDER_EMPTY_EXCEPTION);
 
         return result.getObjectSummaries().stream()
