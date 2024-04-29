@@ -21,8 +21,6 @@
 		<spring.boot.version>3.2.2</spring.boot.version>
 		<org.project.lombok>1.18.30</org.project.lombok>
 		<com.amazonaws.version>1.12.656</com.amazonaws.version>
-		<com.nexus.utils>0.0.1-SNAPSHOT</com.nexus.utils>
-		<nexus.java.lib.utils>master-b9b8acf909-1</nexus.java.lib.utils>
 	</properties>
 
 	<dependencies>
@@ -71,20 +69,7 @@
 			</exclusions>
 		</dependency>
 
-		<dependency>
-			<groupId>com.github.igorcampos-dev</groupId>
-			<artifactId>nexus.java.lib.utils</artifactId>
-			<version>${nexus.java.lib.utils}</version>
-		</dependency>
-
     </dependencies>
-
-	<repositories>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
-	</repositories>
 
 	<build>
 		<plugins>
