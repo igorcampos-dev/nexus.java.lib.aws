@@ -26,27 +26,6 @@ public class S3Impl implements S3 {
     private static final ObjectMetadata metadata = new ObjectMetadata();
 
     @Override
-    public void verifyBucketExistsOrElseCreate() {
-        if (s3Client.getClient().listBuckets().isEmpty()) {
-            s3Client.getClient().createBucket(s3Client.getAwsProperties().getBucketName());
-        }
-    }
-
-    @Override
-    public void verifyFolderExistsOrElseCreate(String folder) {
-        ListObjectsV2Request request = new ListObjectsV2Request()
-                .withBucketName(this.s3Client.getAwsProperties().getBucketName())
-                .withPrefix(folder)
-                .withDelimiter("/");
-
-        ListObjectsV2Result result = this.s3Client.getClient().listObjectsV2(request);
-
-        if (result.getCommonPrefixes().isEmpty()){
-            this.createFolder(folder.concat("/"));
-        }
-    }
-
-    @Override
     public void createFolder(String folderName){
         if (!folderName.endsWith("/")) { folderName += "/"; }
         this.verifyBucketExistsOrElseCreate();
@@ -95,27 +74,12 @@ public class S3Impl implements S3 {
 
         return files;
     }
-    @Override
-    public List<S3File> formateList(ListObjectsV2Result result, String folderPath) {
-
-        result.getObjectSummaries().removeIf(objectSummary -> folderPath.concat("/").equals(objectSummary.getKey()));
-
-        Objects.requireNonEmpty(result.getObjectSummaries(), FOLDER_EMPTY_EXCEPTION);
-
-        return result.getObjectSummaries().stream()
-                .filter(s3ObjectSummary -> !s3ObjectSummary.getKey().equals(folderPath + "/"))
-                .map(s3ObjectSummary -> S3File.builder()
-                        .size(s3ObjectSummary.getSize())
-                        .filename(s3ObjectSummary.getKey().concat(".pdf")
-                                .substring(s3ObjectSummary.getKey().lastIndexOf("/") + 1))
-                        .build()).collect(Collectors.toList());
-    }
 
     @Override
     public void deleteFile(String folderName, String fileName) {
         String key = String.format("%s/%s", folderName, fileName);
         boolean exists = s3Client.getClient().doesObjectExist(s3Client.getAwsProperties().getBucketName(), key);
-        Objects.throwIfFalse(exists, FILE_NOT_EXISTS);
+        Objects.throwIfFalse(exists, new FileNotExists("O arquivo não existe"));
         s3Client.getClient().deleteObject(new DeleteObjectRequest(s3Client.getAwsProperties().getBucketName(), key));
     }
 
@@ -129,7 +93,7 @@ public class S3Impl implements S3 {
     public byte[] getFile(String folder, String fileName) {
         String key = String.format("%s/%s", folder, fileName);
         boolean exists = s3Client.getClient().doesObjectExist(s3Client.getAwsProperties().getBucketName(), key);
-        Objects.throwIfFalse(exists, FILE_NOT_EXISTS);
+        Objects.throwIfFalse(exists, new FileNotExists("O arquivo não existe"));
 
         GetObjectRequest getObjectRequest = new GetObjectRequest(s3Client.getAwsProperties().getBucketName(), key);
         S3Object object = s3Client.getClient().getObject(getObjectRequest);
@@ -141,6 +105,20 @@ public class S3Impl implements S3 {
         }
     }
 
+    private List<S3File> formateList(ListObjectsV2Result result, String folderPath) {
+
+        result.getObjectSummaries().removeIf(objectSummary -> folderPath.concat("/").equals(objectSummary.getKey()));
+
+        Objects.requireNonEmpty(result.getObjectSummaries(), new FolderEmptyException("Lista vazia, você não possui contraCheques"));
+
+        return result.getObjectSummaries().stream()
+                .filter(s3ObjectSummary -> !s3ObjectSummary.getKey().equals(folderPath + "/"))
+                .map(s3ObjectSummary -> S3File.builder()
+                        .size(s3ObjectSummary.getSize())
+                        .filename(s3ObjectSummary.getKey().concat(".pdf")
+                                .substring(s3ObjectSummary.getKey().lastIndexOf("/") + 1))
+                        .build()).collect(Collectors.toList());
+    }
 
     private void putObjectV2(String folderName){
         metadata.setContentLength(0);
@@ -169,12 +147,26 @@ public class S3Impl implements S3 {
         try {
             ObjectMetadata metadata = s3Client.getClient().getObjectMetadata(s3Client.getAwsProperties().getBucketName(), key);
             boolean isNotNull = metadata != null;
-            Objects.throwIfTrue(isNotNull, FILE_ALREADY_EXISTS_EXCEPTION);
+            Objects.throwIfTrue(isNotNull, new FileAlreadyExistsException("Arquivo já existe na base de dados"));
         } catch (AmazonS3Exception ignored){}
     }
 
-    private static final FolderEmptyException FOLDER_EMPTY_EXCEPTION = new FolderEmptyException("Lista vazia, você não possui contraCheques");
-    private static final FileNotExists FILE_NOT_EXISTS = new FileNotExists("O arquivo não existe");
-    private static final FileAlreadyExistsException FILE_ALREADY_EXISTS_EXCEPTION = new FileAlreadyExistsException("Arquivo já existe na base de dados");
+    private void verifyBucketExistsOrElseCreate() {
+        if (s3Client.getClient().listBuckets().isEmpty()) {
+            s3Client.getClient().createBucket(s3Client.getAwsProperties().getBucketName());
+        }
+    }
 
+    private void verifyFolderExistsOrElseCreate(String folder) {
+        ListObjectsV2Request request = new ListObjectsV2Request()
+                .withBucketName(this.s3Client.getAwsProperties().getBucketName())
+                .withPrefix(folder)
+                .withDelimiter("/");
+
+        ListObjectsV2Result result = this.s3Client.getClient().listObjectsV2(request);
+
+        if (result.getCommonPrefixes().isEmpty()){
+            this.createFolder(folder.concat("/"));
+        }
+    }
 }
