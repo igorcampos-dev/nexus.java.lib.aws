@@ -1,4 +1,4 @@
-# Project Nexus - Biblioteca de Utilidades para o serviço cloud AWS
+# Projeto Nexus - Biblioteca de Utilidades para o serviço cloud AWS
 
 uma biblioteca de utilitários cloud AWS como parte do projeto Nexus. O objetivo principal desta biblioteca é fornecer funcionalidades para manipulação de arquivos do serviço bucketS3.
 
