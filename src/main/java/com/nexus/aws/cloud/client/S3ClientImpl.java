@@ -35,4 +35,5 @@ public class S3ClientImpl implements S3Client {
     private BasicAWSCredentials getProperties() {
         return new BasicAWSCredentials(awsProperties.getAccessKey(), awsProperties.getSecretKey());
     }
+
 }
