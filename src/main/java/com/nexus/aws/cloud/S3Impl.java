@@ -35,24 +35,12 @@ public class S3Impl implements S3 {
     @Override
     public void putObject(InputStream file, String folder, String filename){
         String key = String.format("%s/%s", folder, filename);
-
         this.fileExists(key);
-
-        metadata.setContentType("application/pdf");
-        PutObjectRequest request = new PutObjectRequest(
-                s3Client.getAwsProperties().getBucketName(),
-                key,
-                file,
-                metadata);
-
-        request.getRequestClientOptions().setReadLimit(1024 * 1024);
-
         try {
-
             this.verifyBucketExistsOrElseCreate();
             this.verifyFolderExistsOrElseCreate(folder);
-            this.s3Client.getClient().putObject(request);
-
+            PutObjectRequest request = new PutObjectRequest(s3Client.getAwsProperties().getBucketName(), key, file, null);
+            s3Client.getClient().putObject(request);
         } catch (SdkClientException e){
             strangeError(e);
         } catch (Exception e) {
