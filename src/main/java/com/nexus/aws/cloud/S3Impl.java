@@ -13,6 +13,7 @@ import com.nexus.aws.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,26 +21,41 @@ import java.util.stream.Collectors;
 @Log4j2
 @Component
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public class S3Impl implements S3 {
 
     private final S3Client s3Client;
     private static final ObjectMetadata metadata = new ObjectMetadata();
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
-    @Override
-    public void createFolder(String folderName){
+    private void createFolder(String folderName){
         if (!folderName.endsWith("/")) { folderName += "/"; }
         this.verifyBucketExistsOrElseCreate();
         this.putObjectV2(folderName);
     }
 
     @Override
-    public void putObject(InputStream file, String folder, String filename){
+    public void putObject(MultipartFile file, String folder, String filename){
+
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new IllegalArgumentException("File size exceeds the maximum limit of 5MB");
+        }
+
         String key = String.format("%s/%s", folder, filename);
         this.fileExists(key);
         try {
             this.verifyBucketExistsOrElseCreate();
             this.verifyFolderExistsOrElseCreate(folder);
-            PutObjectRequest request = new PutObjectRequest(s3Client.getAwsProperties().getBucketName(), key, file, null);
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(file.getSize());
+            PutObjectRequest request =
+                    new PutObjectRequest(
+                            s3Client.getAwsProperties().getBucketName(),
+                            key,
+                            file.getInputStream(),
+                            metadata
+                    );
+
             s3Client.getClient().putObject(request);
         } catch (SdkClientException e){
             strangeError(e);
@@ -72,7 +88,7 @@ public class S3Impl implements S3 {
     }
 
     @Override
-    public void updateObject(InputStream file, String folder, String filename) {
+    public void updateObject(MultipartFile file, String folder, String filename) {
         this.deleteFile(folder, filename);
         this.putObject(file, folder, filename);
     }
@@ -103,8 +119,8 @@ public class S3Impl implements S3 {
                 .filter(s3ObjectSummary -> !s3ObjectSummary.getKey().equals(folderPath + "/"))
                 .map(s3ObjectSummary -> S3File.builder()
                         .size(s3ObjectSummary.getSize())
-                        .filename(s3ObjectSummary.getKey().concat(".pdf")
-                                .substring(s3ObjectSummary.getKey().lastIndexOf("/") + 1))
+                        .filename(s3ObjectSummary.getKey()
+                                                 .substring(s3ObjectSummary.getKey().lastIndexOf("/") + 1))
                         .build()).collect(Collectors.toList());
     }
 
