@@ -11,6 +11,7 @@ import com.nexus.aws.model.FileEmpty;
 import com.nexus.aws.model.S3File;
 import com.nexus.aws.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,7 +59,7 @@ public class S3Impl implements S3 {
 
             s3Client.getClient().putObject(request);
         } catch (SdkClientException e){
-            strangeError(e);
+            throw e;
         } catch (Exception e) {
             log.info("Error in put file:".concat(e.getMessage()));
         }
@@ -130,13 +131,6 @@ public class S3Impl implements S3 {
             s3Client.getClient().putObject(s3Client.getAwsProperties().getBucketName(), folderName, FileEmpty.inputStream, metadata);
         } catch (Exception ignored){
 
-        }
-    }
-
-    private void strangeError(SdkClientException e){
-        String estrangeMessage = "Unable to verify integrity of data upload. Client calculated content hash (contentMD5:";
-        if (!e.getMessage().contains(estrangeMessage)) {
-            log.error("Erro ao enviar para o Amazon S3: {}", e.getMessage());
         }
     }
 

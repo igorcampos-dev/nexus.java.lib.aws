@@ -1,6 +1,8 @@
 package com.nexus.aws.cloud.properties;
 
+import com.amazonaws.annotation.NotThreadSafe;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
